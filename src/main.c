@@ -8,8 +8,8 @@
 
 static void system_clock_init(void);
 static void csp_router(void * args);
-static void csp_client(void * args);
 static void csp_server(void * args);
+static void csp_client(void * args);
 static void uart_init(void);
 static int uart_tx(void * driver_data, const uint8_t * data, size_t len);
 
@@ -46,8 +46,8 @@ int main(void) {
     SVC_Setup();
 
     xTaskCreate(csp_router, "csp_router", 512, NULL, tskIDLE_PRIORITY + 1, NULL);
-    xTaskCreate(csp_client, "csp_client", 512, NULL, tskIDLE_PRIORITY + 1, NULL);
     xTaskCreate(csp_server, "csp_server", 512, NULL, tskIDLE_PRIORITY + 1, NULL);
+    xTaskCreate(csp_client, "csp_client", 512, NULL, tskIDLE_PRIORITY + 1, NULL);
     
     vTaskStartScheduler();
     
@@ -62,26 +62,48 @@ static void csp_router(void * args) {
 
 static void csp_client(void * args) {
     while (1) {
-        csp_conn_t * conn = csp_connect(CSP_PRIO_NORM, 1, 10, 0, CSP_O_NONE);
-        if (conn) {
-            csp_packet_t * packet = csp_buffer_get(0);
-            if (packet) {
-                const char * src = "Hello, CSP world!";
-                (void)strcpy((char *)packet->data, src);
-                packet->length = strlen(src);
-                csp_send(conn, packet);
-            }
-
-            (void)csp_close(conn);
-        }
-
+        (void)csp_ping(2, 1000, 100, CSP_O_NONE);
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 
 static void csp_server(void * args) {
+    /* Create socket with no specific socket options, e.g. accepts CRC32, HMAC, etc. if enabled during compilation */
+    csp_socket_t sock = {0};
+
+    /* Bind socket to all ports, e.g. all incoming connections will be handled here */
+    csp_bind(&sock, CSP_ANY);
+
+    /* Create a backlog */
+    csp_listen(&sock, 10);
+
+    /* Wait for connections and then process packets on the connection */
     while (1) {
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        /* Wait for a new connection, 10000 mS timeout */
+        csp_conn_t * conn;
+        if ((conn = csp_accept(&sock, 10000)) == NULL) {
+            /* timeout */
+            continue;
+        }
+
+        /* Read packets on connection, timout is 100 mS */
+        csp_packet_t * packet;
+        while ((packet = csp_read(conn, 100)) != NULL) {
+            switch (csp_conn_dport(conn)) {
+                case 10:
+                    /* Process packet here */
+                    csp_buffer_free(packet);
+                    break;
+
+                default:
+                    /* Call the default CSP service handler, handle pings, buffer use, etc. */
+                    csp_service_handler(packet);
+                    break;
+            }
+        }
+
+        /* Close current connection */
+        csp_close(conn);
     }
 }
 
@@ -170,6 +192,18 @@ static void system_clock_init(void) {
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
     RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
+    /** Supply configuration update enable */
+    HAL_PWREx_ConfigSupply(PWR_LDO_SUPPLY);
+
+    /** Configure the main internal regulator output voltage */
+    __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE2);
+
+    while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
+
+    /**
+     * Initializes the RCC Oscillators according to the specified parameters
+     * in the RCC_OscInitTypeDef structure. 
+     */
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
     RCC_OscInitStruct.HSIState = RCC_HSI_DIV1;
     RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -178,6 +212,7 @@ static void system_clock_init(void) {
         configASSERT(false);
     }
 
+    /** Initializes the CPU, AHB and APB buses clocks */
     RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                                 |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2
                                 |RCC_CLOCKTYPE_D3PCLK1|RCC_CLOCKTYPE_D1PCLK1;

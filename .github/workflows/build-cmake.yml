@@ -1,0 +1,60 @@
+name: Build and Test
+on: [push, pull_request]
+jobs:
+  run-tests:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Setup packages on Linux
+        run: |
+          sudo apt update
+          sudo apt install gcc-arm-none-eabi ninja-build cmake libzmq3-dev libsocketcan-dev socat iproute2
+          sudo apt install linux-modules-extra-$(uname -r)
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: Checkout CSP
+        uses: actions/checkout@v4
+        with:
+          repository: dimitrovand/libcsp
+          ref: freertos_cmake
+          path: src/libcsp
+
+      - name: Build
+        run: |
+          cmake -S ./ -B build -G Ninja && ninja -C build
+
+      - name: Build CSP for Linux
+        run: |
+          cd ./src/libcsp 
+          python3 ./examples/buildall.py --build-system=cmake
+          cd ../../
+
+      - name: Get Renode
+        run: |
+          wget https://github.com/renode/renode/releases/download/v1.15.3/renode-1.15.3.linux-portable.tar.gz
+          mkdir renode-1.15.3 && tar -xzf ./renode-1.15.3.linux-portable.tar.gz -C renode-1.15.3 --strip-components=1
+
+      - name: Run Test Client
+        run: |
+          ./renode-1.15.3/renode --disable-gui --hide-log stm32h753.resc > /dev/null 2>& 1 &
+          sleep 5
+          socat -d -d -d pty,raw,echo=0,link=/tmp/pty1 /tmp/uart > /dev/null 2>& 1 &
+          sleep 5
+          ./src/libcsp/build/examples/csp_client -k /tmp/pty1 -a 2 -C 10 -T 10 -v 2
+          pkill renode
+          pkill socat
+
+      - name: Run Test Server
+        run: |
+          ./renode-1.15.3/renode --disable-gui --hide-log stm32h753.resc > /dev/null 2>& 1 &
+          sleep 5
+          socat -d -d -d pty,raw,echo=0,link=/tmp/pty1 /tmp/uart > /dev/null 2>& 1 &
+          sleep 5
+          ./src/libcsp/build/examples/csp_server -k /tmp/pty1 -a 2 -T 10 -v 2
+          pkill renode
+          pkill socat

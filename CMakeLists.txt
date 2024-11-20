@@ -14,9 +14,6 @@ project(${PROJECT_NAME} ASM C)
 file(GLOB PROJECT_SOURCES
     src/*.c
     src/stm32h7xx-hal-driver/Src/*.c
-    # src/Core/Src/*.c
-    # src/Core/Startup/*.s
-    # src/Drivers/STM32H7xx_HAL_Driver/Src/*.c
 )
 
 list(APPEND PROJECT_SOURCES
@@ -33,11 +30,6 @@ list(APPEND PROJECT_INCLUDES
     src/cmsis-device-h7/Include
     src/stm32h7xx-hal-driver/Inc
     src/stm32h7xx-hal-driver/Inc/Legacy 
-    # src/Core/Inc
-    # src/Drivers/STM32H7xx_HAL_Driver/Inc
-    # src/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy
-    # src/Drivers/CMSIS/Device/ST/STM32H7xx/Include
-    # src/Drivers/CMSIS/Include
 )
 
 add_compile_definitions(USE_HAL_DRIVER STM32H753xx)
