@@ -1,0 +1,29 @@
+{
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "linux": {
+                "command": "cmake -S . -B build -G Ninja && ninja -C build"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Clean",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "linux": {
+                "command": "rm -r ./build"
+            }
+        },
+    ]
+}

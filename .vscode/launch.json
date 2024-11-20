@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "stlink",
+            "request": "launch",
+            "type": "cortex-debug",
+            "cwd": "${workspaceRoot}",
+            "servertype": "stlink",
+            "executable": "build/csp_freertos.elf",
+            "device": "STM32H753"
+        }
+    ]
+}

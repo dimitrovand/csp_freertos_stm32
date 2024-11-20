@@ -1,0 +1,20 @@
+[submodule "src/CMSIS_5"]
+	path = src/CMSIS_5
+	url = https://github.com/ARM-software/CMSIS_5.git
+	shallow = true
+	branch = v5.9.0
+[submodule "src/stm32h7xx-hal-driver"]
+	path = src/stm32h7xx-hal-driver
+	url = https://github.com/STMicroelectronics/stm32h7xx-hal-driver.git
+	shallow = true
+	branch = v1.11.4
+[submodule "src/cmsis-device-h7"]
+	path = src/cmsis-device-h7
+	url = https://github.com/STMicroelectronics/cmsis-device-h7.git
+	shallow = true
+	branch = v1.10.5
+[submodule "src/FreeRTOS-Kernel"]
+	path = src/FreeRTOS-Kernel
+	url = https://github.com/FreeRTOS/FreeRTOS-Kernel.git
+	shallow = true
+	branch = V11.1.0
