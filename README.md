@@ -30,6 +30,7 @@ After this step the project tree should look similar to this:
 └── ...
 ```
 ### 4. Build:
+From within the project root directory:
 ```bash
 cmake -S ./ -B build -G Ninja && ninja -C build
 ```
@@ -38,11 +39,11 @@ cmake -S ./ -B build -G Ninja && ninja -C build
 Make sure Renode in the project's root directory:
 ```bash
 wget https://github.com/renode/renode/releases/download/v1.15.3/renode-1.15.3.linux-portable.tar.gz
-mkdir renode-1.15.3 && tar -xzf ./renode-1.15.3.linux-portable.tar.gz -C renode-1.15.3 --strip-components=1
+mkdir renode && tar -xzf ./renode-1.15.3.linux-portable.tar.gz -C renode --strip-components=1
 ```
 ## Run
 From within the project root directory, run the following command to start the simulation:
 ```bash
-./renode-1.15.3/renode --disable-gui stm32h753.resc &
+./renode/renode --disable-gui stm32h753.resc
 ```
 This will create the emulated STM32H753 device and set up a virtual port that can be accessed.

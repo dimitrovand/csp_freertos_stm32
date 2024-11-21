@@ -24,7 +24,7 @@ jobs:
           ref: freertos_cmake
           path: src/libcsp
 
-      - name: Build
+      - name: Build CSP for STM32
         run: |
           cmake -S ./ -B build -G Ninja && ninja -C build
 
@@ -36,12 +36,12 @@ jobs:
 
       - name: Get Renode
         run: |
-          wget https://github.com/renode/renode/releases/download/v1.15.3/renode-1.15.3.linux-portable.tar.gz
-          mkdir renode-1.15.3 && tar -xzf ./renode-1.15.3.linux-portable.tar.gz -C renode-1.15.3 --strip-components=1
+          wget -q https://github.com/renode/renode/releases/download/v1.15.3/renode-1.15.3.linux-portable.tar.gz
+          mkdir renode && tar -xzf ./renode-1.15.3.linux-portable.tar.gz -C renode --strip-components=1
 
       - name: Run Test Client
         run: |
-          ./renode-1.15.3/renode --disable-gui --hide-log stm32h753.resc > /dev/null 2>& 1 &
+          ./renode/renode --disable-gui --hide-log stm32h753.resc > /dev/null 2>& 1 &
           sleep 5
           socat -d -d -d pty,raw,echo=0,link=/tmp/pty1 /tmp/uart > /dev/null 2>& 1 &
           sleep 5
@@ -51,7 +51,7 @@ jobs:
 
       - name: Run Test Server
         run: |
-          ./renode-1.15.3/renode --disable-gui --hide-log stm32h753.resc > /dev/null 2>& 1 &
+          ./renode/renode --disable-gui --hide-log stm32h753.resc > /dev/null 2>& 1 &
           sleep 5
           socat -d -d -d pty,raw,echo=0,link=/tmp/pty1 /tmp/uart > /dev/null 2>& 1 &
           sleep 5
