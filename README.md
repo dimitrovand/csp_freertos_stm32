@@ -10,26 +10,8 @@ sudo apt install gcc-arm-none-eabi cmake ninja
 ```bash
 git clone --recursive <this repository url>
 ```
-### 3. Navigate to the `src` directory and clone the necessary dependencies:
-```bash
-git clone --depth 1 https://github.com/libcsp/libcsp.git
-```
-After this step the project tree should look similar to this:
-```bash
-.
-├── LICENSE
-├── README.md
-├── src
-│   ├── CMSIS_5
-│   ├── cmsis-device-h7
-│   ├── FreeRTOS-Config
-│   ├── FreeRTOS-Kernel
-│   ├── libcsp
-│   ├── ...
-│   └── main.c
-└── ...
-```
-### 4. Build:
+
+### 3. Build:
 From within the project root directory:
 ```bash
 cmake -S ./ -B build -G Ninja && ninja -C build
