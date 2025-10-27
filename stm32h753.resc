@@ -2,5 +2,4 @@ emulation CreateUartPtyTerminal "term" "/tmp/uart" True
 mach create "nucleo"
 machine LoadPlatformDescription @platforms/boards/nucleo_h753zi.repl
 sysbus LoadELF $CWD/build/csp_freertos.elf
-start
 connector Connect sysbus.usart3 term

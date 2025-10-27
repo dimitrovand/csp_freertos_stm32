@@ -2,13 +2,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "stlink",
+            "name": "Debug application in Renode",
+            "type": "cppdbg",
             "request": "launch",
-            "type": "cortex-debug",
+            "preLaunchTask": "Run Renode",
+            "postDebugTask": "Close Renode",
+            "miDebuggerServerAddress": "localhost:3333",
             "cwd": "${workspaceRoot}",
-            "servertype": "stlink",
-            "executable": "build/csp_freertos.elf",
-            "device": "STM32H753"
+            "miDebuggerPath": "arm-none-eabi-gdb",
+            "program": "${workspaceRoot}/build/csp_freertos.elf"
         }
     ]
 }

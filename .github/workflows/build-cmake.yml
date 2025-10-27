@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Test Client
         run: |
-          ./renode/renode --disable-gui --hide-log stm32h753.resc > /dev/null 2>& 1 &
+          ./renode/renode --disable-gui --hide-log platform.resc > /dev/null 2>& 1 &
           sleep 5
           socat -d -d -d pty,raw,echo=0,link=/tmp/pty1 /tmp/uart > /dev/null 2>& 1 &
           sleep 5
@@ -44,7 +44,7 @@ jobs:
 
       - name: Run Test Server
         run: |
-          ./renode/renode --disable-gui --hide-log stm32h753.resc > /dev/null 2>& 1 &
+          ./renode/renode --disable-gui --hide-log platform.resc > /dev/null 2>& 1 &
           sleep 5
           socat -d -d -d pty,raw,echo=0,link=/tmp/pty1 /tmp/uart > /dev/null 2>& 1 &
           sleep 5

@@ -1,0 +1,2 @@
+include $CWD/stm32h753.resc
+machine StartGdbServer 3333
