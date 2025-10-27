@@ -61,8 +61,37 @@ static void csp_router(void * args) {
 }
 
 static void csp_client(void * args) {
+    uint8_t count = 0;
+    
     while (1) {
-        (void)csp_ping(2, 1000, 100, CSP_O_NONE);
+        /* 1. Connect to host on 'server_address', port SERVER_PORT with regular UDP-like protocol and 1000 ms timeout */
+		csp_conn_t * conn = csp_connect(CSP_PRIO_NORM, 2, 10, 1000, CSP_O_NONE);
+		if (conn == NULL) {
+			continue;
+		}
+
+		/* 2. Get packet buffer for message/data */
+		csp_packet_t * packet = csp_buffer_get(0);
+		if (packet == NULL) {
+            csp_close(conn);
+			continue;
+		}
+
+		/* 3. Copy data to packet */
+		memcpy(packet->data, "Hello world ", 12);
+		memcpy(packet->data + 12, &count, 1);
+		memset(packet->data + 13, 0, 1);
+		count++;
+
+		/* 4. Set packet length */
+		packet->length = (strlen((char *) packet->data) + 1); /* include the 0 termination */
+
+		/* 5. Send packet */
+		csp_send(conn, packet);
+
+		/* 6. Close connection */
+		csp_close(conn);
+
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
