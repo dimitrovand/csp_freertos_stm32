@@ -17,13 +17,6 @@ jobs:
         with:
           submodules: 'true'
 
-      - name: Checkout CSP
-        uses: actions/checkout@v4
-        with:
-          repository: dimitrovand/libcsp
-          ref: freertos_cmake
-          path: src/libcsp
-
       - name: Build CSP for STM32
         run: |
           cmake -S ./ -B build -G Ninja && ninja -C build

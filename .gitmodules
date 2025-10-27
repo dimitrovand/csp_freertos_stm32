@@ -18,3 +18,6 @@
 	url = https://github.com/FreeRTOS/FreeRTOS-Kernel.git
 	shallow = true
 	branch = V11.1.0
+[submodule "src/libcsp"]
+	path = src/libcsp
+	url = https://github.com/dimitrovand/libcsp.git

@@ -46,8 +46,8 @@ set(FREERTOS_HEAP "4" CACHE STRING "" FORCE)
 set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "" FORCE)
 add_subdirectory(src/FreeRTOS-Kernel)
 
-set(CSP_KERNEL_NAME "FreeRTOS" CACHE STRING "Kernel name for libcsp" FORCE)
-set(CSP_USE_CUSTOM_ENDIAN ON CACHE BOOL "Use custom endian.h" FORCE)
+set(CSP_SYSTEM_NAME "FreeRTOS" CACHE STRING "Kernel name for libcsp" FORCE)
+set(CSP_USE_CUSTOM_ENDIAN_H ON CACHE BOOL "Use custom endian.h" FORCE)
 add_subdirectory(src/libcsp)
 target_include_directories(csp PRIVATE src)
 
